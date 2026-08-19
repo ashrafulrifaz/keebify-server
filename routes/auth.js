@@ -14,6 +14,19 @@ router.post('/register', async (req, res) => {
         return;
     }
 
+    if(user.provider === 'google' || user.provider === 'apple') {
+        const userData = {
+            email: user.email,
+            name: user.name,
+            image: user.image,
+            provider: user.provider,
+            createdAt: new Date(),
+        }
+
+        const result = await usersCollection.insertOne(userData);
+        return res.send(result);
+    }
+
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(user.password, saltRounds);
 
@@ -21,6 +34,8 @@ router.post('/register', async (req, res) => {
         email: user.email,
         password: hashedPassword,
         name: user.name,
+        provider: 'credential',
+        createdAt: new Date(),
     }
 
     const result = await usersCollection.insertOne(userData);
