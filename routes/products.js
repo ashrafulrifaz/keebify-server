@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
     res.send(result)
 })
 
-router.patch('/:id', async(req, res) => {
+router.patch('/:id', async (req, res) => {
     const productsCollection = getDB().collection('products');
     const {id} = req.params
     const {status} = req.body
@@ -28,6 +28,14 @@ router.patch('/:id', async(req, res) => {
         }
     }
     const result = await productsCollection.updateOne(filter, newStatus)
+    res.send(result)
+})
+
+router.delete('/:id', async (req, res) => {
+    const productsCollection = getDB().collection('products');
+    const {id} = req.params
+    const filter = {_id: new ObjectId(id)}
+    const result = await productsCollection.deleteOne(filter)
     res.send(result)
 })
 
