@@ -10,7 +10,7 @@ router.post('/register', async (req, res) => {
 
     const isExist = await usersCollection.findOne({email: user.email});
     if (isExist) {
-        res.status(400).send({message: 'User already exists'});
+        res.status(200).send({ message: 'User already exists', userId: isExist._id, role: isExist.role });
         return;
     }
 
@@ -20,6 +20,7 @@ router.post('/register', async (req, res) => {
             name: user.name,
             image: user.image,
             provider: user.provider,
+            role: 'user',
             createdAt: new Date(),
         }
 
@@ -34,6 +35,7 @@ router.post('/register', async (req, res) => {
         email: user.email,
         password: hashedPassword,
         name: user.name,
+        role: 'user',
         provider: 'credential',
         createdAt: new Date(),
     }
@@ -58,7 +60,7 @@ router.post('/signin', async (req, res) => {
         return;
     }
 
-    res.send({ id: user._id, email: user.email });
+    res.send({ id: user._id, email: user.email, role: user.role });
 });
 
 export default router;
