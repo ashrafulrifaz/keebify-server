@@ -1,0 +1,21 @@
+import jwt from 'jsonwebtoken';
+
+export const verifyToken = (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).send({ message: 'No token provided' });
+    }
+
+    const token = authHeader.spllit(' ')[1];
+    if (!token) {
+        return res.status(401).send({ message: 'No token provided' });
+    }
+
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+            return res.status(401).send({ message: 'Invalid token' });
+        }
+        req.user = decoded;
+        next();
+    });
+}

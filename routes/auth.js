@@ -60,7 +60,9 @@ router.post('/signin', async (req, res) => {
         return;
     }
 
-    res.send({ id: user._id, email: user.email, role: user.role });
+    const token = jwt.sign({id: user._id, email: user.email, role: user.role}, process.env.JWT_SECRET, {expiresIn: '1h'});
+
+    res.send({ id: user._id, email: user.email, role: user.role, token: token });
 });
 
 export default router;
