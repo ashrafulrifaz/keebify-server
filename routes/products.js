@@ -1,10 +1,13 @@
 import { ObjectId } from 'mongodb';
 import { getDB } from '../db.js';
 import express from 'express';
+// import { verifyToken } from './middleware.js';
 
 const router = express.Router();
 
 router.get('/', async (req, res) => {
+    // const email = req.query.email
+    // console.log(email, req.token)
     const productsCollection = getDB().collection('products');
     const result = await productsCollection.find().toArray()
     res.send(result)

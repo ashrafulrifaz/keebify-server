@@ -6,6 +6,7 @@ dotenv.config();
 import { connectToMongoDB } from './db.js';
 import ProductsRouter from './routes/products.js';
 import AuthRouter from './routes/auth.js';
+import CartRouter from './routes/cart.js';
 
 const app = express();
 const port = 3001 || process.env.PORT;
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
 
 app.use('/products', ProductsRouter);
 app.use('/auth', AuthRouter);
+app.use('/cart', CartRouter);
 
 connectToMongoDB().then(() => {
     app.listen(port, () => {
