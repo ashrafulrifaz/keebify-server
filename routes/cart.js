@@ -15,6 +15,8 @@ router.post('/', async (req, res) => {
     const { userEmail, item } = req.body;
     const cartCollection = getDB().collection('cart');
 
+    console.log(item)
+
     if (!userEmail || !item[0].productIds || item[0].productIds.length === 0) {
         return res.status(400).json({ message: 'Invalid request' });
     }
@@ -24,7 +26,7 @@ router.post('/', async (req, res) => {
     if (!existingCart) {
         await cartCollection.insertOne({
             userEmail,
-            items: [{ productIds: item[0].productIds, quantity: item[0].quantity || 1 }],
+            items: [{ productIds: item[0].productIds, quantity: item[0].productQuantity}],
             createdAt: new Date(),
         });
         return res.json({ message: 'Cart created and item added' });
@@ -33,15 +35,25 @@ router.post('/', async (req, res) => {
     const alreadyInCart = existingCart.items.some((cartItem) => item[0].productIds.includes(cartItem.productIds[0]));
 
     if (alreadyInCart) {
-        return res.status(200).json({ message: 'Product already in cart' });
+        return res.status(409).json({ message: 'Product already in cart' });
     }
 
     await cartCollection.updateOne(
         { userEmail },
-        { $push: { items: { productIds: item[0].productIds, quantity: item[0].quantity || 1 } } }
+        { $push: { items: { productIds: item[0].productIds, quantity: item[0].productQuantity} } }
     );
 
     res.json({ message: 'Added to cart' });
+});
+
+router.delete('/', async (req, res) => {
+    const { userEmail, productId } = req.body;
+    const cartCollection = getDB().collection('cart');
+    await cartCollection.updateOne(
+        { userEmail },
+        { $pull: { items: { productIds: productId } } }
+    );
+    res.json({ message: 'Removed from cart' });
 });
 
 export default router;
